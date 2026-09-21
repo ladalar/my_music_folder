@@ -1,0 +1,93 @@
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+  background: #fffaf2;
+  color: #403426;
+}
+
+.app {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+header {
+  background: #ffe7b8;
+  border-radius: 18px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.2rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+nav {
+  margin-top: 0.8rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+button {
+  border: 0;
+  background: #ffb347;
+  color: #2c1f10;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: #f5ddc4;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+main {
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  background: #fff;
+  border: 2px solid #f6dfc5;
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.piece-grid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.preview {
+  background: #fff5e5;
+  border: 1px dashed #e8c79e;
+  border-radius: 10px;
+  padding: 0.75rem;
+  margin: 0.7rem 0;
+}
+
+ol {
+  padding-left: 1.2rem;
+}
+
+.tag {
+  display: inline-block;
+  background: #fff2d8;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+}
