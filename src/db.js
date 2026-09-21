@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const sqlite3 = require('sqlite3');
-const { open } = require('sqlite');
+const Database = require('better-sqlite3');
 
 const seedPieces = [
   {
@@ -26,16 +25,14 @@ const seedPieces = [
   }
 ];
 
-async function initDb(dbFilePath) {
+function initDb(dbFilePath) {
   const dir = path.dirname(dbFilePath);
   fs.mkdirSync(dir, { recursive: true });
 
-  const db = await open({
-    filename: dbFilePath,
-    driver: sqlite3.Database
-  });
+  const db = new Database(dbFilePath);
+  db.pragma('journal_mode = WAL');
 
-  await db.exec(`
+  db.exec(`
     CREATE TABLE IF NOT EXISTS pieces (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
@@ -44,7 +41,7 @@ async function initDb(dbFilePath) {
     );
   `);
 
-  await db.exec(`
+  db.exec(`
     CREATE TABLE IF NOT EXISTS book_entries (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       piece_id INTEGER NOT NULL,
@@ -54,21 +51,31 @@ async function initDb(dbFilePath) {
     );
   `);
 
-  const pieceCount = await db.get('SELECT COUNT(*) AS count FROM pieces');
+  const pieceCount = db.prepare('SELECT COUNT(*) AS count FROM pieces').get();
 
   if (!pieceCount?.count) {
-    const insert = await db.prepare(
-      'INSERT INTO pieces (title, level, description) VALUES (?, ?, ?)'
-    );
+    const insert = db.prepare('INSERT INTO pieces (title, level, description) VALUES (?, ?, ?)');
 
     for (const piece of seedPieces) {
-      await insert.run(piece.title, piece.level, piece.description);
+      insert.run(piece.title, piece.level, piece.description);
     }
-
-    await insert.finalize();
   }
 
-  return db;
+  return {
+    all(sql, ...params) {
+      return Promise.resolve(db.prepare(sql).all(...params));
+    },
+    get(sql, ...params) {
+      return Promise.resolve(db.prepare(sql).get(...params));
+    },
+    run(sql, ...params) {
+      const info = db.prepare(sql).run(...params);
+      return Promise.resolve({
+        lastID: Number(info.lastInsertRowid),
+        changes: info.changes
+      });
+    }
+  };
 }
 
 module.exports = { initDb };
