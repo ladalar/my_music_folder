@@ -1,0 +1,307 @@
+:root {
+  --bg: #f5eee3;
+  --surface: #fbf7ef;
+  --surface-alt: #f8f1e7;
+  --text: #3b2f25;
+  --muted: #6d5d4f;
+  --accent: #b58b5d;
+  --accent-soft: #d8bf93;
+  --sage: #8f9a7d;
+  --terracotta: #b87659;
+  --shadow: 0 10px 30px rgba(82, 62, 42, 0.1);
+  --radius-lg: 18px;
+  --radius-md: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at top left, #fff8ed, var(--bg));
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.container {
+  width: min(1120px, 92vw);
+  margin: 0 auto;
+}
+
+header {
+  padding: 1.25rem 0;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 2rem;
+  letter-spacing: 0.02em;
+}
+
+.nav a {
+  color: var(--muted);
+  text-decoration: none;
+  margin-left: 1rem;
+  font-weight: 500;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  padding: 1.5rem 0 2.5rem;
+}
+
+.hero-copy h1 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  line-height: 1.08;
+  margin: 0 0 1rem;
+}
+
+.hero-copy p {
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.badge {
+  background: var(--surface);
+  border: 1px solid #e7d9c4;
+  padding: 0.55rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.hero-image {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.section {
+  padding: 2.8rem 0;
+}
+
+.section h2 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1.9rem, 3vw, 2.6rem);
+  margin-top: 0;
+  margin-bottom: 0.6rem;
+}
+
+.section-intro {
+  color: var(--muted);
+  margin-top: 0;
+  line-height: 1.6;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.step-card,
+.piece-card,
+.book-card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  border: 1px solid #e9ddca;
+  box-shadow: var(--shadow);
+}
+
+.step-card {
+  padding: 1.1rem;
+}
+
+.step-icon {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-bottom: 0.7rem;
+  color: white;
+  font-weight: 600;
+}
+
+.step-icon.browse {
+  background: var(--sage);
+}
+
+.step-icon.pick {
+  background: var(--accent);
+}
+
+.step-icon.build {
+  background: var(--terracotta);
+}
+
+.step-card h3 {
+  margin: 0 0 0.45rem;
+}
+
+.step-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.library-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.pieces-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.piece-card {
+  padding: 1rem;
+}
+
+.level-chip {
+  display: inline-block;
+  background: var(--surface-alt);
+  border: 1px solid #e8d9c3;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.6rem;
+}
+
+.piece-card h3 {
+  margin: 0 0 0.45rem;
+}
+
+.piece-card p {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.62rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button.primary {
+  background: var(--text);
+  color: #fff;
+}
+
+button.secondary {
+  background: var(--surface-alt);
+  color: var(--text);
+  border: 1px solid #e7d5bc;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.book-card {
+  padding: 1rem;
+  position: sticky;
+  top: 1rem;
+}
+
+.book-list {
+  padding-left: 1.15rem;
+  margin: 0.3rem 0 1rem;
+}
+
+.book-list li {
+  margin-bottom: 0.75rem;
+}
+
+.book-list li > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.65rem;
+}
+
+.book-list button {
+  font-size: 0.75rem;
+  padding: 0.24rem 0.45rem;
+}
+
+.book-empty {
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.toast {
+  margin-top: 0.8rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+footer {
+  padding: 2rem 0 2.8rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+@media (max-width: 1024px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .library-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .book-card {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .steps,
+  .pieces-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .brand {
+    font-size: 1.75rem;
+  }
+
+  .nav a {
+    margin-left: 0.6rem;
+    font-size: 0.92rem;
+  }
+}
