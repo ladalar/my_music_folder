@@ -3,6 +3,9 @@ const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
+const requestCounts = new Map();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const RATE_LIMIT_MAX_REQUESTS = 120;
 
 const pieces = [
   {
@@ -38,6 +41,23 @@ const pieces = [
 let myBook = [];
 
 app.use(express.json());
+app.use((req, res, next) => {
+  const key = req.ip || req.socket.remoteAddress || 'unknown';
+  const now = Date.now();
+  const entry = requestCounts.get(key);
+
+  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+    requestCounts.set(key, { windowStart: now, count: 1 });
+    return next();
+  }
+
+  if (entry.count >= RATE_LIMIT_MAX_REQUESTS) {
+    return res.status(429).json({ error: 'Too many requests. Please try again soon.' });
+  }
+
+  entry.count += 1;
+  return next();
+});
 app.use('/react', express.static(path.join(__dirname, 'node_modules/react/umd')));
 app.use('/react-dom', express.static(path.join(__dirname, 'node_modules/react-dom/umd')));
 app.use(express.static(path.join(__dirname, 'public')));
