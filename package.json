@@ -1,0 +1,13 @@
+{
+  "name": "my_music_folder",
+  "version": "1.0.0",
+  "description": "My Music Folder leveled piano sheet music platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "express": "^4.21.2"
+  }
+}
