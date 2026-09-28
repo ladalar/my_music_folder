@@ -1,13 +1,41 @@
 const { useEffect, useState } = React;
 
+const FRONT_PAGE_ASSETS = {
+  widgetImage: '/images/piano_image.jpg',
+  printableImage: '/images/piano_image.jpg',
+  coloringImage: '/images/piano_image.jpg'
+};
+
 function App() {
   const [pieces, setPieces] = useState([]);
   const [bookEntries, setBookEntries] = useState([]);
   const [message, setMessage] = useState('');
+  const [page, setPage] = useState(
+    window.location.hash === '#front-page'
+      ? 'front-page'
+      : window.location.hash === '#my-book'
+        ? 'my-book'
+        : 'library'
+  );
+  const [showColoringPage, setShowColoringPage] = useState(false);
+  const [selectedBookEntryId, setSelectedBookEntryId] = useState(null);
 
   useEffect(() => {
     loadPieces();
     loadBook();
+
+    function updatePage() {
+      setPage(
+        window.location.hash === '#front-page'
+          ? 'front-page'
+          : window.location.hash === '#my-book'
+            ? 'my-book'
+            : 'library'
+      );
+    }
+
+    window.addEventListener('hashchange', updatePage);
+    return () => window.removeEventListener('hashchange', updatePage);
   }, []);
 
   async function loadPieces() {
@@ -20,6 +48,9 @@ function App() {
     const response = await fetch('/api/my-book');
     const data = await response.json();
     setBookEntries(data);
+    setSelectedBookEntryId((currentId) =>
+      data.some((entry) => entry.id === currentId) ? currentId : data[0]?.id || null
+    );
   }
 
   async function addToBook(pieceId) {
@@ -57,6 +88,179 @@ function App() {
   }
 
   const levelOnePieces = pieces.filter((piece) => piece.level === 'Level 1');
+  const frontPagePiece = pieces.find((piece) => piece.title === 'Front page');
+  const selectedBookEntry = bookEntries.find((entry) => entry.id === selectedBookEntryId);
+
+  function openFrontPage() {
+    window.location.hash = 'front-page';
+    setShowColoringPage(false);
+  }
+
+  function printFrontPage() {
+    const imagePath = showColoringPage
+      ? FRONT_PAGE_ASSETS.coloringImage
+      : FRONT_PAGE_ASSETS.widgetImage;
+    const printWindow = window.open('', '_blank');
+
+    if (!printWindow) {
+      setMessage('Please allow pop-ups to print the Front page.');
+      clearToastSoon();
+      return;
+    }
+
+    printWindow.document.write(`
+      <!doctype html>
+      <html>
+        <head>
+          <title>Front Page</title>
+          <style>
+            @page { margin: 0; }
+            html, body { margin: 0; min-height: 100%; }
+            body { display: grid; place-items: center; }
+            img { display: block; max-width: 100%; max-height: 100vh; object-fit: contain; }
+          </style>
+        </head>
+        <body>
+          <img src="${imagePath}" alt="Front Page" />
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+
+    const image = printWindow.document.querySelector('img');
+    const print = () => {
+      printWindow.focus();
+      printWindow.print();
+    };
+
+    image.addEventListener('load', print, { once: true });
+    image.addEventListener('error', () => {
+      printWindow.close();
+      setMessage('The Front page image could not be loaded for printing.');
+      clearToastSoon();
+    }, { once: true });
+
+    if (image.complete) {
+      print();
+    }
+
+    printWindow.addEventListener('afterprint', () => printWindow.close(), { once: true });
+  }
+
+  const frontPageSection = React.createElement(
+    'section',
+    { className: `container front-page-view${page === 'front-page' ? '' : ' page-hidden'}` },
+    React.createElement(
+      'button',
+      {
+        className: 'secondary front-page-back',
+        onClick: () => {
+          window.location.hash = 'library';
+        }
+      },
+      'Back to Library'
+    ),
+    React.createElement(
+      'div',
+      { className: 'front-page-viewer' },
+      React.createElement('img', {
+        src: showColoringPage ? FRONT_PAGE_ASSETS.coloringImage : FRONT_PAGE_ASSETS.widgetImage,
+        alt: showColoringPage
+          ? 'Black-and-white Front page coloring book version'
+          : 'Colored Front page',
+        className: 'front-page-full-image'
+      }),
+      React.createElement(
+        'div',
+        { className: 'front-page-actions' },
+        React.createElement(
+          'button',
+          { className: 'primary', onClick: printFrontPage },
+          'Print'
+        ),
+        React.createElement(
+          'button',
+          {
+            className: 'secondary',
+            onClick: () => frontPagePiece && addToBook(frontPagePiece.id),
+            disabled: !frontPagePiece
+          },
+          'Add to My Book'
+        ),
+        React.createElement(
+          'button',
+          {
+            className: 'secondary',
+            onClick: () => setShowColoringPage((current) => !current)
+          },
+          showColoringPage ? 'View colored page' : 'Switch to coloring book'
+        )
+      )
+    )
+  );
+
+  const myBookSection = React.createElement(
+    'section',
+    { className: `container my-book-page${page === 'my-book' ? '' : ' page-hidden'}` },
+    React.createElement('h1', null, 'My Book'),
+    React.createElement(
+      'p',
+      { className: 'section-intro' },
+      'Open a bookmark to view the content you have added to your book.'
+    ),
+    React.createElement(
+      'div',
+      { className: 'book-layout' },
+      React.createElement(
+        'nav',
+        { className: 'bookmarks', 'aria-label': 'My Book bookmarks' },
+        bookEntries.length
+          ? bookEntries.map((entry) =>
+              React.createElement(
+                'button',
+                {
+                  className: `bookmark${entry.id === selectedBookEntryId ? ' active' : ''}`,
+                  key: entry.id,
+                  onClick: () => setSelectedBookEntryId(entry.id)
+                },
+                entry.title
+              )
+            )
+          : React.createElement('p', { className: 'book-empty' }, 'No bookmarks yet.')
+      ),
+      React.createElement(
+        'article',
+        { className: 'book-content' },
+        selectedBookEntry
+          ? React.createElement(
+              React.Fragment,
+              null,
+              React.createElement('span', { className: 'level-chip' }, selectedBookEntry.level),
+              React.createElement('h2', null, selectedBookEntry.title),
+              React.createElement('p', null, selectedBookEntry.description),
+              React.createElement(
+                'button',
+                {
+                  className: 'secondary',
+                  onClick: () => removeFromBook(selectedBookEntry.id)
+                },
+                'Remove from My Book'
+              )
+            )
+          : React.createElement('p', { className: 'book-empty' }, 'Select a bookmark to view its content.')
+      )
+    ),
+    React.createElement(
+      'button',
+      {
+        className: 'primary',
+        onClick: exportPdfPlaceholder,
+        disabled: bookEntries.length === 0
+      },
+      'Export as PDF'
+    ),
+    message && React.createElement('div', { className: 'toast' }, message)
+  );
 
   return React.createElement(
     React.Fragment,
@@ -80,9 +284,11 @@ function App() {
     React.createElement(
       'main',
       null,
+      frontPageSection,
+      myBookSection,
       React.createElement(
         'section',
-        { className: 'container hero' },
+        { className: `container hero${page !== 'library' ? ' page-hidden' : ''}` },
         React.createElement(
           'div',
           { className: 'hero-copy' },
@@ -104,14 +310,17 @@ function App() {
           'div',
           { className: 'hero-image' },
           React.createElement('img', {
-            src: 'https://github.com/user-attachments/assets/0fd57265-2362-490f-88b7-94b7addc3b54',
+            src: '/images/piano_image.jpg',
             alt: 'Warm illustrated piano scene in a sunlit room'
           })
         )
       ),
       React.createElement(
         'section',
-        { id: 'how-it-works', className: 'section container' },
+        {
+          id: 'how-it-works',
+          className: `section container${page !== 'library' ? ' page-hidden' : ''}`
+        },
         React.createElement('h2', null, 'How it works'),
         React.createElement(
           'p',
@@ -158,7 +367,10 @@ function App() {
       ),
       React.createElement(
         'section',
-        { id: 'library', className: 'section container' },
+        {
+          id: 'library',
+          className: `section container${page !== 'library' ? ' page-hidden' : ''}`
+        },
         React.createElement('h2', null, 'Library: Level 1'),
         React.createElement(
           'p',
@@ -175,62 +387,41 @@ function App() {
               React.createElement(
                 'article',
                 { className: 'piece-card', key: piece.id },
-                React.createElement('span', { className: 'level-chip' }, piece.level),
-                React.createElement('h3', null, piece.title),
-                React.createElement('p', null, piece.description),
-                React.createElement(
-                  'button',
-                  { className: 'secondary', onClick: () => addToBook(piece.id) },
-                  'Add to My Book'
-                )
+                piece.title === 'Front page'
+                  ? React.createElement(
+                    React.Fragment,
+                    null,
+                    React.createElement('h3', null, 'Front Page'),
+                    React.createElement('img', {
+                      className: 'front-page-widget',
+                      src: FRONT_PAGE_ASSETS.widgetImage,
+                      alt: 'Front Page preview',
+                      role: 'button',
+                      tabIndex: 0,
+                      onClick: openFrontPage,
+                      onKeyDown: (event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          openFrontPage();
+                        }
+                      }
+                    })
+                  )
+                  : React.createElement(
+                      React.Fragment,
+                      null,
+                      React.createElement('span', { className: 'level-chip' }, piece.level),
+                      React.createElement('h3', null, piece.title),
+                      React.createElement('p', null, piece.description),
+                      React.createElement(
+                        'button',
+                        { className: 'secondary', onClick: () => addToBook(piece.id) },
+                        'Add to My Book'
+                      )
+                    )
               )
             )
           ),
-          React.createElement(
-            'aside',
-            { id: 'my-book', className: 'book-card' },
-            React.createElement('h3', null, 'My Book'),
-            bookEntries.length === 0
-              ? React.createElement(
-                  'p',
-                  { className: 'book-empty' },
-                  'No pieces yet. Add from the Level 1 library to build your personalized book.'
-                )
-              : React.createElement(
-                  'ol',
-                  { className: 'book-list' },
-                  bookEntries.map((entry) =>
-                    React.createElement(
-                      'li',
-                      { key: entry.id },
-                      React.createElement(
-                        'div',
-                        null,
-                        React.createElement('span', null, entry.title),
-                        React.createElement(
-                          'button',
-                          {
-                            className: 'secondary',
-                            onClick: () => removeFromBook(entry.id),
-                            'aria-label': `Remove ${entry.title}`
-                          },
-                          'Remove'
-                        )
-                      )
-                    )
-                  )
-                ),
-            React.createElement(
-              'button',
-              {
-                className: 'primary',
-                onClick: exportPdfPlaceholder,
-                disabled: bookEntries.length === 0
-              },
-              'Export as PDF'
-            ),
-            message && React.createElement('div', { className: 'toast' }, message)
-          )
         )
       )
     ),

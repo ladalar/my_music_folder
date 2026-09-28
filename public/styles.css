@@ -187,6 +187,73 @@ header {
   padding: 1rem;
 }
 
+.front-page-widget {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+  margin: 0.25rem 0 0.9rem;
+  cursor: pointer;
+}
+
+.page-hidden {
+  display: none;
+}
+
+.front-page-view {
+  padding: 1.5rem 0 2.8rem;
+}
+
+.front-page-back {
+  margin-bottom: 1rem;
+}
+
+.front-page-viewer {
+  background: var(--surface);
+  border: 1px solid #e9ddca;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 1rem;
+}
+
+.front-page-full-image {
+  width: 100%;
+  max-height: 75vh;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.front-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+.front-page-downloads {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.front-page-download img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.45rem;
+}
+
+.download-link {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.8rem;
+  padding: 0.5rem 0.35rem;
+}
+
 .level-chip {
   display: inline-block;
   background: var(--surface-alt);
@@ -236,6 +303,67 @@ button:disabled {
   padding: 1rem;
   position: sticky;
   top: 1rem;
+}
+
+.my-book-page {
+  padding: 2rem 0 3rem;
+}
+
+.my-book-page h1 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  margin: 0 0 0.5rem;
+}
+
+.book-layout {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.28fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: stretch;
+  margin: 1.5rem 0;
+}
+
+.bookmarks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding-top: 1rem;
+}
+
+.bookmark {
+  background: var(--accent-soft);
+  border: 1px solid #c6a677;
+  border-radius: 8px 0 0 8px;
+  color: var(--text);
+  text-align: left;
+  transform: translateX(0.4rem);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.bookmark.active,
+.bookmark:hover {
+  background: var(--surface);
+  transform: translateX(0);
+}
+
+.book-content {
+  min-height: 260px;
+  background: var(--surface);
+  border: 1px solid #e9ddca;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.book-content h2 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1.9rem, 3vw, 2.6rem);
+  margin: 0.6rem 0;
+}
+
+.book-content p {
+  color: var(--muted);
+  line-height: 1.6;
 }
 
 .book-list {
@@ -296,6 +424,25 @@ footer {
     grid-template-columns: 1fr;
   }
 
+  .front-page-downloads {
+    grid-template-columns: 1fr;
+  }
+
+  .book-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .bookmarks {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding-top: 0;
+  }
+
+  .bookmark {
+    border-radius: 8px;
+    transform: none;
+  }
+
   .brand {
     font-size: 1.75rem;
   }
@@ -303,5 +450,34 @@ footer {
   .nav a {
     margin-left: 0.6rem;
     font-size: 0.92rem;
+  }
+}
+
+@media print {
+  body.printing-front-page * {
+    display: none;
+  }
+
+  body.printing-front-page .front-page-view,
+  body.printing-front-page .front-page-viewer,
+  body.printing-front-page .front-page-full-image {
+    display: block;
+  }
+
+  body.printing-front-page .front-page-view {
+    width: 100%;
+    padding: 0;
+  }
+
+  body.printing-front-page .front-page-viewer {
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  body.printing-front-page .front-page-full-image {
+    width: 100%;
+    max-height: none;
+    object-fit: contain;
   }
 }

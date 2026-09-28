@@ -22,6 +22,11 @@ const seedPieces = [
     title: 'First Lesson March',
     level: 'Level 1',
     description: 'A simple 4-bar march using adjacent notes C and D for first-time players.'
+  },
+  {
+    title: 'Front page',
+    level: 'Level 1',
+    description: 'A warm front-page image with printable and coloring-page versions for your piano book.'
   }
 ];
 
@@ -58,6 +63,19 @@ function initDb(dbFilePath) {
 
     for (const piece of seedPieces) {
       insert.run(piece.title, piece.level, piece.description);
+    }
+  } else {
+    const frontPage = seedPieces.find((piece) => piece.title === 'Front page');
+    const existingFrontPage = db
+      .prepare('SELECT id FROM pieces WHERE title = ? AND level = ?')
+      .get(frontPage.title, frontPage.level);
+
+    if (!existingFrontPage) {
+      db.prepare('INSERT INTO pieces (title, level, description) VALUES (?, ?, ?)').run(
+        frontPage.title,
+        frontPage.level,
+        frontPage.description
+      );
     }
   }
 
