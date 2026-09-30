@@ -49,6 +49,15 @@ app.post('/api/my-book', async (req, res) => {
       return res.status(404).json({ error: 'Piece not found.' });
     }
 
+    const existingEntry = await db.get(
+      'SELECT id FROM book_entries WHERE piece_id = ?',
+      pieceId
+    );
+
+    if (existingEntry) {
+      return res.status(409).json({ error: 'Piece is already in your book.' });
+    }
+
     const maxPositionRow = await db.get('SELECT MAX(position) AS maxPosition FROM book_entries');
     const nextPosition = (maxPositionRow?.maxPosition || 0) + 1;
 

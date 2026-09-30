@@ -309,6 +309,23 @@ button:disabled {
   padding: 2rem 0 3rem;
 }
 
+.book-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+}
+
+.eyebrow {
+  display: block;
+  color: var(--terracotta);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.45rem;
+}
+
 .my-book-page h1 {
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: clamp(2.2rem, 4vw, 3.4rem);
@@ -340,6 +357,14 @@ button:disabled {
   transition: transform 0.15s ease, background 0.15s ease;
 }
 
+.bookmark-number {
+  display: inline-block;
+  color: var(--terracotta);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  margin-right: 0.45rem;
+}
+
 .bookmark.active,
 .bookmark:hover {
   background: var(--surface);
@@ -355,10 +380,37 @@ button:disabled {
   padding: clamp(1.25rem, 4vw, 2.5rem);
 }
 
+.book-content-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1.4rem;
+}
+
+.book-content-rule {
+  height: 1px;
+  flex: 1;
+  background: #e5d7c4;
+}
+
 .book-content h2 {
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: clamp(1.9rem, 3vw, 2.6rem);
   margin: 0.6rem 0;
+}
+
+.book-content-image {
+  width: 100%;
+  max-height: 68vh;
+  object-fit: contain;
+  object-position: center;
+  border: 1px solid #e9ddca;
+  border-radius: 10px;
+  margin: 1rem 0 1.25rem;
 }
 
 .book-content p {
@@ -430,6 +482,11 @@ footer {
 
   .book-layout {
     grid-template-columns: 1fr;
+  }
+
+  .book-page-header {
+    align-items: start;
+    flex-direction: column;
   }
 
   .bookmarks {
